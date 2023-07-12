@@ -1,0 +1,30 @@
+﻿<Window x:Class="ATM_Machine.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ATM_Machine.Views"
+        xmlns:vm="clr-namespace:ATM_Machine.ViewModels"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="10,0,10,0">
+        <Button Content="Button" HorizontalAlignment="Left" Height="30" Margin="24,10,0,0" VerticalAlignment="Top" Width="92"/>
+        <Button x:Name="PutMoneyButton" Content="Положить деньги" HorizontalAlignment="Left" Height="30" Margin="0,10,0,0" VerticalAlignment="Top" Width="123" Click="PutMoneyButton_Click"/>
+        <Button x:Name="WithdrawMoneyButton" Content="Снять деньги" HorizontalAlignment="Left" Height="30" Margin="148,10,0,0" VerticalAlignment="Top" Width="123" Click="WithdrawMoneyButton_Click"/>
+        <StackPanel x:Name="StackPanel1" Margin="0,62,0,10" Width="auto" HorizontalAlignment="Stretch" Background="Aqua">
+            <RichTextBox x:Name="StatusTextBox" Height="{Binding Path=ActualHeight, ElementName=StackPanel1, Mode=OneWay}"
+                         VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="auto"
+                         VerticalScrollBarVisibility="Visible" IsReadOnly="True">
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="{Binding StatusText, Mode=TwoWay}" />
+                    </Paragraph>
+                </FlowDocument>                
+            </RichTextBox>
+        </StackPanel>
+        <Button x:Name="UpdateStatus" Content="Обновить статус" Command="{Binding UpdateStatus}"
+                HorizontalAlignment="Left" Height="30" Margin="291,10,0,0" VerticalAlignment="Top" Width="123"/>
+
+    </Grid>
+</Window>
