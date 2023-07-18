@@ -18,17 +18,12 @@ namespace ATM_Machine.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private Window _window;
         private MoneyVaultManager _manager;
-        public MainWindowViewModel(Window window, MoneyVaultManager manager) 
+        public MainWindowViewModel(MoneyVaultManager manager) 
         {
-            _window = window;
             _manager = manager;
             StatusText = _manager.ATMStatus;
-            UpdateStatus = new UpdateStatusCommand(this, _manager);
         }
-        public ICommand UpdateStatus { get; private set; }
-
 
         private string _statusText = "";
         public string StatusText
@@ -40,6 +35,5 @@ namespace ATM_Machine.ViewModels
                 NotifyPropertyChanged("StatusText");
             }
         }
-
     }
 }

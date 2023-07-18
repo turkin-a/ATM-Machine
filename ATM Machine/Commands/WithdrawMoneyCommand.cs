@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace ATM_Machine.Commands
 {
-    public class WithdrawMoneyCommand :CommandBase
+    public class WithdrawMoneyCommand : CommandBase
     {
         WithdrawMoneyWindowViewModel _viewModel;
         MoneyVaultManager _manager;
@@ -20,18 +20,18 @@ namespace ATM_Machine.Commands
         }
         public override void Execute(object? parameter)
         {
-            if (IsValid())
+            if (_viewModel.IsSetOfBanknotes)
+                WithdrawMoneyByBanknotes();
+            else
+                WithdrawMoneyByTotalSum();
+        }
+
+        private void WithdrawMoneyByBanknotes()
+        {
+            if (IsSetOfBanknotesValid())
             {
-                List<Banknotes> list = new List<Banknotes>
-                    {
-                        new Banknotes(10, int.Parse(_viewModel.Banknotes_10)),
-                        new Banknotes(50, int.Parse(_viewModel.Banknotes_50)),
-                        new Banknotes(100, int.Parse(_viewModel.Banknotes_100)),
-                        new Banknotes(500, int.Parse(_viewModel.Banknotes_500)),
-                        new Banknotes(1000, int.Parse(_viewModel.Banknotes_1000)),
-                        new Banknotes(5000, int.Parse(_viewModel.Banknotes_5000))
-                    };
-                if (_manager.IsTooManyBanknotes(list))
+                List<Banknotes> listOfWithdrawedMoney = _viewModel.GetListMoney();
+                if (_manager.IsTooManyBanknotes(listOfWithdrawedMoney))
                 {
                     MessageBox.Show($"Превышен лимит банкнот. Допустимое число {_manager.MaxNumberBanknotePerOperation}",
                         "Превышен лимит банкнот",
@@ -39,14 +39,15 @@ namespace ATM_Machine.Commands
                         MessageBoxImage.Error);
                     return;
                 }
-                if (_manager.WithdrawBanknotes(list))
+                if (_manager.WithdrawBanknotes(listOfWithdrawedMoney))
                 {
+                    _viewModel.UpdateStatus();
                     _viewModel.CloseWindow();
                 }
                 else
                 {
-                    MessageBox.Show("Ошибка приема банкнот. Введите допустимое число купюр для каждого номинала",
-                        "Ошибка приема банкнот",
+                    MessageBox.Show("Ошибка выдачи банкнот. Введите допустимое число купюр для каждого номинала",
+                        "Ошибка выдачи банкнот",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                 }
@@ -59,9 +60,52 @@ namespace ATM_Machine.Commands
                         MessageBoxImage.Error);
             }
         }
-        private bool IsValid()
+
+        private void WithdrawMoneyByTotalSum()
         {
-            if (_viewModel.IsValid())
+            if(IsTotalSumValid())
+            {
+                int totalSum = int.Parse(_viewModel.TotalSum);
+                if (_manager.IsNumberMultipleOfMiniDenomination(totalSum) == false)
+                {
+                    MessageBox.Show("Cуммарное число денег на выдачу должно быть кратно наименьшей банкноте.",
+                        "Неверный ввод",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return;
+                }
+                if (_manager.WithdrawBanknotesBySum(totalSum))
+                {
+                    _viewModel.UpdateStatus();
+                    _viewModel.CloseWindow();
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка выдачи банкнот. Недостаточно купюр или превышено число банкнот за раз.",
+                        "Ошибка выдачи банкнот",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Введено неверное суммарное число денег на выдачу.",
+                    "Неверный ввод",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+
+        private bool IsSetOfBanknotesValid()
+        {
+            if (_viewModel.IsSetOfBanknotesValid())
+                return true;
+            return false;
+        }
+        private bool IsTotalSumValid()
+        {
+            if (_viewModel.IsTotalSumValid())
                 return true;
             return false;
         }

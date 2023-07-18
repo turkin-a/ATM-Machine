@@ -112,5 +112,25 @@ namespace ATM_Machine.Tests
             // Assert
             Assert.IsFalse(result);
         }
+        [Test]
+        public void WithdrawMoneyByTotalSum_Success()
+        {
+            // Arrange
+            int totalSum = 1000;
+            // Act
+            var result = _moneyVault.WithdrawBanknotesBySum(totalSum);
+            // Assert
+            Assert.IsTrue(result);
+        }
+        [Test]
+        public void WithdrawMoneyByTotalSum_LowStorage()
+        {
+            // Arrange
+            int totalSum = 100000;
+            // Act
+            var result = _moneyVault.WithdrawBanknotesBySum(totalSum);
+            // Assert
+            Assert.IsFalse(result);
+        }
     }
 }

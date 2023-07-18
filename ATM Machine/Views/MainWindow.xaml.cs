@@ -23,23 +23,34 @@ namespace ATM_Machine.Views
     public partial class MainWindow : Window
     {
         private readonly MoneyVaultManager _moneyVaultManager = new MoneyVaultManager();
-        
+        MainWindowViewModel _viewModel;
+
+
         public MainWindow()
         {
-            InitializeComponent();                
-            this.DataContext = new MainWindowViewModel(this, _moneyVaultManager);
+            InitializeComponent();
+            _viewModel = new MainWindowViewModel(_moneyVaultManager);            
+            this.DataContext = _viewModel;
         }
 
         private void PutMoneyButton_Click(object sender, RoutedEventArgs e)
         {
-            PutMoneyWindow putMoneyWindow = new PutMoneyWindow(_moneyVaultManager);
-            putMoneyWindow.ShowDialog();
 
+            UpdateStatusEventHandler updateStatus = (object sender, EventArgs e) => 
+            {
+                _viewModel.StatusText = _moneyVaultManager.ATMStatus;
+            };
+            PutMoneyWindow putMoneyWindow = new PutMoneyWindow(_moneyVaultManager, updateStatus);
+            putMoneyWindow.ShowDialog();
         }
 
         private void WithdrawMoneyButton_Click(object sender, RoutedEventArgs e)
         {
-            WithdrawMoneyWindow withdrawMoneyWindow = new WithdrawMoneyWindow(_moneyVaultManager);
+            UpdateStatusEventHandler updateStatus = (object sender, EventArgs e) =>
+            {
+                _viewModel.StatusText = _moneyVaultManager.ATMStatus;
+            };
+            WithdrawMoneyWindow withdrawMoneyWindow = new WithdrawMoneyWindow(_moneyVaultManager, updateStatus);
             withdrawMoneyWindow.ShowDialog();
         }
     }

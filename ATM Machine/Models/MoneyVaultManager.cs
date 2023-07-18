@@ -10,49 +10,9 @@ namespace ATM_Machine.Models
     {
         private MoneyVault _moneyVault;
         private int _maxNumberBanknotePerOperation = 100;
-        private readonly int _maxNumberOfBanknotes = 1000;
-        private readonly int _numberOfBanknotes = 500;
         public MoneyVaultManager()
         {
-            List<BanknoteCassette> banknoteCassettes = new List<BanknoteCassette>
-            {
-                new BanknoteCassette
-                    (
-                        denomination: 10,
-                        maxNumberOfBanknotes: _maxNumberOfBanknotes,
-                        numberOfBanknotes: _numberOfBanknotes
-                    ),
-                new BanknoteCassette
-                    (
-                        denomination: 50,
-                        maxNumberOfBanknotes: _maxNumberOfBanknotes,
-                        numberOfBanknotes: _numberOfBanknotes
-                    ),
-                new BanknoteCassette
-                    (
-                        denomination: 100,
-                        maxNumberOfBanknotes: _maxNumberOfBanknotes,
-                        numberOfBanknotes: _numberOfBanknotes
-                    ),
-                new BanknoteCassette
-                    (
-                        denomination: 500,
-                        maxNumberOfBanknotes: _maxNumberOfBanknotes,
-                        numberOfBanknotes: _numberOfBanknotes
-                    ),
-                new BanknoteCassette
-                    (
-                        denomination: 1000,
-                        maxNumberOfBanknotes: _maxNumberOfBanknotes,
-                        numberOfBanknotes: _numberOfBanknotes
-                    ),
-                new BanknoteCassette
-                    (
-                        denomination: 5000,
-                        maxNumberOfBanknotes: _maxNumberOfBanknotes,
-                        numberOfBanknotes: _numberOfBanknotes
-                    )
-            };
+            var banknoteCassettes = BanknoteCassettesProvider.GetBanknoteCassettes();
             _moneyVault = new MoneyVault(banknoteCassettes, _maxNumberBanknotePerOperation);
         }
         public string ATMStatus
@@ -80,6 +40,14 @@ namespace ATM_Machine.Models
         public bool WithdrawBanknotes(List<Banknotes> list)
         {
             return _moneyVault.WithdrawBanknotes(list);
+        }
+        public bool WithdrawBanknotesBySum(int totalSum)
+        {
+            return _moneyVault.WithdrawBanknotesBySum(totalSum);
+        }
+        public bool IsNumberMultipleOfMiniDenomination(int number)
+        {
+            return _moneyVault.IsNumberMultipleOfMiniDenomination(number);
         }
     }
 }

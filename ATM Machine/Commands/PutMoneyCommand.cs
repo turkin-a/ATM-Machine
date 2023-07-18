@@ -11,7 +11,7 @@ namespace ATM_Machine.Commands
 {
     public class PutMoneyCommand : CommandBase
     {
-        PutMoneyWindowViewModel _viewModel;
+        private PutMoneyWindowViewModel _viewModel;
         MoneyVaultManager _manager;
         public PutMoneyCommand(PutMoneyWindowViewModel viewModel, MoneyVaultManager manager)
         {
@@ -22,16 +22,8 @@ namespace ATM_Machine.Commands
         {
             if (IsValid())
             {
-                List<Banknotes> list = new List<Banknotes>
-                    {
-                        new Banknotes(10, int.Parse(_viewModel.Banknotes_10)),
-                        new Banknotes(50, int.Parse(_viewModel.Banknotes_50)),
-                        new Banknotes(100, int.Parse(_viewModel.Banknotes_100)),
-                        new Banknotes(500, int.Parse(_viewModel.Banknotes_500)),
-                        new Banknotes(1000, int.Parse(_viewModel.Banknotes_1000)),
-                        new Banknotes(5000, int.Parse(_viewModel.Banknotes_5000))
-                    };
-                if(_manager.IsTooManyBanknotes(list))
+                List<Banknotes> listOfPutedMoney = _viewModel.GetListMoney();
+                if (_manager.IsTooManyBanknotes(listOfPutedMoney))
                 {
                     MessageBox.Show($"Превышен лимит банкнот. Допустимое число {_manager.MaxNumberBanknotePerOperation}",
                         "Превышен лимит банкнот",
@@ -39,8 +31,9 @@ namespace ATM_Machine.Commands
                         MessageBoxImage.Error);
                     return;
                 }
-                if (_manager.PutBanknotes(list))
+                if (_manager.PutBanknotes(listOfPutedMoney))
                 {
+                    _viewModel.UpdateStatus();
                     _viewModel.CloseWindow();
                 }
                 else
@@ -61,7 +54,7 @@ namespace ATM_Machine.Commands
         }
         private bool IsValid()
         {
-            if (_viewModel.IsValid())
+            if (_viewModel.IsSetOfBanknotesValid())
                 return true;
             return false;
         }

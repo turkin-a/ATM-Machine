@@ -4,12 +4,13 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace ATM_Machine.Models
 {
     public class MoneyVault
     {
-        private List<BanknoteCassette> _banknoteCassettes = new List<BanknoteCassette>();
+        private List<BanknoteCassette> _banknoteCassettes;
         private int _maxNumberBanknotePerOperation;
         public int MaxNumberBanknotePerOperation 
         {
@@ -19,10 +20,6 @@ namespace ATM_Machine.Models
             }
         }
 
-        public MoneyVault(int maxNumberBanknotePerOperation)
-        {
-            _maxNumberBanknotePerOperation = maxNumberBanknotePerOperation;
-        }
         public MoneyVault(List<BanknoteCassette> banknoteCassettes, int maxNumberBanknotePerOperation)
         {
             _banknoteCassettes = banknoteCassettes;
@@ -104,6 +101,32 @@ namespace ATM_Machine.Models
             }
             return false;
         }
+        public bool WithdrawBanknotesBySum(int totalSum)
+        {
+            if (ChooseBanknotesBySum(out List<Banknotes> list, totalSum))
+            {
+                return WithdrawBanknotes(list);
+            }
+            return false;
+        }
+        private bool ChooseBanknotesBySum(out List<Banknotes> list, int totalSum)
+        {
+            list = new List<Banknotes>();
+            var Denominations = _banknoteCassettes.OrderByDescending(b => b.Denomination).Select(x => x.Denomination).ToList();
+            foreach ( var denomination in Denominations)
+            {
+                int maxBankmoteCount = totalSum / denomination;
+                int restBankmoteCount = _banknoteCassettes
+                    .Where(b => b.Denomination == denomination)
+                    .Select(x => x.NumberOfBanknotes).First();
+                int currBankmoteCount = Math.Min(maxBankmoteCount, restBankmoteCount);
+                totalSum -= currBankmoteCount * denomination;
+                list.Add(new Banknotes(denomination, currBankmoteCount));
+            }
+            if (totalSum == 0 && IsTooManyBanknotes(list) == false)
+                return true;
+            return false;
+        }
         private bool CanWithdrawBanknotes(List<Banknotes> list)
         {
             foreach (var banknotes in list)
@@ -116,5 +139,12 @@ namespace ATM_Machine.Models
             return true;
         }
 
+        public bool IsNumberMultipleOfMiniDenomination(int number)
+        {
+            int minDenomination = _banknoteCassettes.MinBy(x => x.Denomination).Denomination;
+            if (number % minDenomination == 0)
+                return true;
+            return false;
+        }
     }
 }

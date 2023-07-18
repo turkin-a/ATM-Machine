@@ -12,29 +12,49 @@ namespace ATM_Machine.ViewModels
 {
     public class WithdrawMoneyWindowViewModel : TerminalViewModel
     {
-        Window _addFileWindow;
+        public event UpdateStatusEventHandler EventUpdateStatus;
         MoneyVaultManager _manager;
-        public WithdrawMoneyWindowViewModel(Window window, MoneyVaultManager manager)
+        public WithdrawMoneyWindowViewModel( MoneyVaultManager manager, UpdateStatusEventHandler updateStatusDelegate)
         {
-            _addFileWindow = window;
             _manager = manager;
+            EventUpdateStatus = updateStatusDelegate;
             WithdrawMoney = new WithdrawMoneyCommand(this, _manager);
         }
         public ICommand WithdrawMoney { get; private set; }
-        public bool IsValid()
+
+        private bool _isSetOfBanknotes = true;
+        public bool IsSetOfBanknotes
         {
-            if (int.TryParse(Banknotes_10, out int result1) == true && result1 >= 0 &&
-                int.TryParse(Banknotes_50, out int result2) == true && result2 >= 0 &&
-                int.TryParse(Banknotes_100, out int result3) == true && result3 >= 0 &&
-                int.TryParse(Banknotes_500, out int result4) == true && result4 >= 0 &&
-                int.TryParse(Banknotes_1000, out int result5) == true && result5 >= 0 &&
-                int.TryParse(Banknotes_5000, out int result6) == true && result6 >= 0)
+            get { return _isSetOfBanknotes; }
+            set
+            {
+                _isSetOfBanknotes = value;
+                NotifyPropertyChanged("IsSetOfBanknotes");
+            }
+        }
+
+        private string _totalSum = "0";
+        public string TotalSum
+        {
+            get { return _totalSum; }
+            set
+            {
+                _totalSum = (value);
+                if (int.Parse(value) < 0)
+                    throw new Exception();
+                NotifyPropertyChanged("TotalSum");
+            }
+        }
+
+        public event EventHandler EventCloseWindow;
+        public void CloseWindow() => EventCloseWindow?.Invoke(this, EventArgs.Empty);
+        public void UpdateStatus() => EventUpdateStatus?.Invoke(this, EventArgs.Empty);
+
+        public bool IsTotalSumValid()
+        {
+            if (int.TryParse(TotalSum, out int result) == true && result >= 0)
                 return true;
             return false;
-        }
-        public void CloseWindow()
-        {
-            _addFileWindow.Close();
         }
     }
 }

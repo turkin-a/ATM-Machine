@@ -22,11 +22,13 @@ namespace ATM_Machine.Views
     public partial class WithdrawMoneyWindow : Window
     {
         private MoneyVaultManager _moneyVaultManager;
-        public WithdrawMoneyWindow(MoneyVaultManager moneyVaultManager)
+        public WithdrawMoneyWindow(MoneyVaultManager moneyVaultManager, UpdateStatusEventHandler updateStatusDelegate)
         {
             InitializeComponent();
             _moneyVaultManager = moneyVaultManager;
-            this.DataContext = new WithdrawMoneyWindowViewModel(this, _moneyVaultManager);
+            WithdrawMoneyWindowViewModel viewModel = new WithdrawMoneyWindowViewModel(_moneyVaultManager, updateStatusDelegate);
+            viewModel.EventCloseWindow += (sender, args) => { this.Close(); };
+            this.DataContext = viewModel;
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

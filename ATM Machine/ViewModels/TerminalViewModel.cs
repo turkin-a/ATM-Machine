@@ -9,8 +9,7 @@ using System.Windows;
 namespace ATM_Machine.ViewModels
 {
     public class TerminalViewModel : ViewModelBase
-    {       
-
+    {
         private string _banknotes_10 = "0";
         public string Banknotes_10
         {
@@ -82,6 +81,31 @@ namespace ATM_Machine.ViewModels
                     throw new Exception();
                 NotifyPropertyChanged("Banknotes_5000");
             }
+        }
+
+        public bool IsSetOfBanknotesValid()
+        {
+            if (int.TryParse(Banknotes_10, out int result1) == true && result1 >= 0 &&
+                int.TryParse(Banknotes_50, out int result2) == true && result2 >= 0 &&
+                int.TryParse(Banknotes_100, out int result3) == true && result3 >= 0 &&
+                int.TryParse(Banknotes_500, out int result4) == true && result4 >= 0 &&
+                int.TryParse(Banknotes_1000, out int result5) == true && result5 >= 0 &&
+                int.TryParse(Banknotes_5000, out int result6) == true && result6 >= 0)
+                return true;
+            return false;
+        }
+        public List<Banknotes> GetListMoney()
+        {
+            List<Banknotes> list = new List<Banknotes>
+                {
+                    new Banknotes(10, int.Parse(Banknotes_10)),
+                    new Banknotes(50, int.Parse(Banknotes_50)),
+                    new Banknotes(100, int.Parse(Banknotes_100)),
+                    new Banknotes(500, int.Parse(Banknotes_500)),
+                    new Banknotes(1000, int.Parse(Banknotes_1000)),
+                    new Banknotes(500, int.Parse(Banknotes_5000))
+                };
+            return list;
         }
     }
 }

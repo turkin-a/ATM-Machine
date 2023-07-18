@@ -23,8 +23,6 @@
                 </FlowDocument>                
             </RichTextBox>
         </StackPanel>
-        <Button x:Name="UpdateStatus" Content="Обновить статус" Command="{Binding UpdateStatus}"
-                HorizontalAlignment="Left" Height="30" Margin="291,10,0,0" VerticalAlignment="Top" Width="123"/>
 
     </Grid>
 </Window>
